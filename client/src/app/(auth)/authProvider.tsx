@@ -3,6 +3,7 @@ import { Amplify } from 'aws-amplify';
 
 import { Authenticator, Heading, Radio, RadioGroupField, useAuthenticator, View } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
+import { usePathname, useRouter } from 'next/dist/client/components/navigation';
 
 Amplify.configure({
     Auth:{
@@ -45,6 +46,7 @@ const components = {
     }
     
   },
+  
   SignUp:{
    FormFields(){
        const {validationErrors}=useAuthenticator();
@@ -63,13 +65,27 @@ const components = {
     </>
    )
    } 
+,
+    Footer(){
+      const {toSignIn} = useAuthenticator();
+        return(
+              <View className='mt-4 text-center'>
+               <p className="text-muted-foreground">Aleady have an account? {"  "}<button onClick={toSignIn} 
+               className="text-gray hover:underline bg-transparent border-none cursor-pointer p-0 ml-1">
+                Sign In
+               </button></p>
+              </View>
+            )
+    }
+
   }
+  
 }
 const formFields ={
   signUp:{
     username:{
-      placeholder:"Enter Your Password",
-      label:"Email",
+      placeholder:"choose your username",
+      label:"Username",
       isRequired:true
     },
     email:{
@@ -94,9 +110,23 @@ const formFields ={
 }
 const Auth = ({children}: {children: React.ReactNode})=> {
   const {user} = useAuthenticator((context) => [context.user]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const isAuthPage =pathname.match(/^\/(signin|signup)$/);
+  const isDashboard = pathname.startsWith('/manager') || pathname.startsWith('/tenant');
+  React.useEffect(()=>{
+    if(user && isAuthPage){
+      router.push('/');
+    }
+  }, [user, isAuthPage, router]);
+ if(!isAuthPage && !isDashboard){
+  return <>{children}</>;
+ }
   return (
     <div className="h-full">
-     <Authenticator components={components} formFields={formFields}>{children}</Authenticator>
+     <Authenticator 
+     initialState ={pathname.includes('signup') ? "signUp" : "signIn"}
+     components={components} formFields={formFields}>{children}</Authenticator>
     </div>
   );
 }
