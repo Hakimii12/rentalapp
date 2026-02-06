@@ -10,7 +10,8 @@ const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const helmet_1 = __importDefault(require("helmet"));
 // ROUTE IMPORT 
-// import TenantRoutes from "./routes/tenantRoutes.js";
+const tenantRoutes_1 = __importDefault(require("./routes/tenantRoutes"));
+const managerRoutes_1 = __importDefault(require("./routes/managerRoutes"));
 // CONFIGURATION
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -21,7 +22,8 @@ app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use((0, cors_1.default)());
 // ROUTES  
-// app.use("/api",TenantRoutes); 
+app.use("/tenant", tenantRoutes_1.default);
+app.use("/manager", managerRoutes_1.default);
 app.get("/", (req, res) => {
     res.send("this is home page");
 });

@@ -5,7 +5,8 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 // ROUTE IMPORT 
-// import TenantRoutes from "./routes/tenantRoutes.js";
+import TenantRoutes from "./routes/tenantRoutes";
+import ManagerRoutes from "./routes/managerRoutes";
 // CONFIGURATION
 dotenv.config();
 const app = express();
@@ -16,7 +17,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended:false }))
 app.use(cors());
 // ROUTES  
-// app.use("/api",TenantRoutes); 
+app.use("/tenant",TenantRoutes); 
+app.use("/manager",ManagerRoutes);
 app.get("/",(req,res)=>{
     res.send("this is home page")
 })

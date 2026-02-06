@@ -9,35 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTenant = exports.GetTenant = void 0;
+exports.CreateManager = exports.GetManager = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const GetTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const GetManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { cognitoId } = req.params;
-        const tenant = yield prisma.tenant.findUnique({
-            where: { cognitoId },
-            include: {
-                favorites: true
-            }
+        const manager = yield prisma.manager.findUnique({
+            where: { cognitoId }
         });
-        if (tenant) {
-            res.json(tenant);
+        if (manager) {
+            res.json(manager);
         }
         else {
-            res.status(404).json({ message: "Tenant not found" });
+            res.status(404).json({ message: "Manager not found" });
         }
     }
     catch (error) {
         res.status(500)
-            .json({ message: "Error fetching tenant", error });
+            .json({ message: "Error fetching manager", error });
     }
 });
-exports.GetTenant = GetTenant;
-const CreateTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.GetManager = GetManager;
+const CreateManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { cognitoId, name, email, phoneNumber } = req.body;
-        const tenant = yield prisma.tenant.create({
+        const manager = yield prisma.manager.create({
             data: {
                 cognitoId,
                 name,
@@ -45,16 +42,16 @@ const CreateTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 phoneNumber
             }
         });
-        if (tenant) {
-            res.json(tenant);
+        if (manager) {
+            res.json(manager);
         }
         else {
-            res.status(400).json({ message: "Error creating tenant" });
+            res.status(400).json({ message: "Error creating manager" });
         }
     }
     catch (error) {
         res.status(500)
-            .json({ message: "Error creating tenant", error });
+            .json({ message: "Error creating manager", error });
     }
 });
-exports.CreateTenant = CreateTenant;
+exports.CreateManager = CreateManager;
