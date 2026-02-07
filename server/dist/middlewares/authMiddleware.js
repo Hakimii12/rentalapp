@@ -25,9 +25,12 @@ const authMiddleware = (allowedRoles) => {
                 res.status(403).json({ message: "Forbidden" });
                 return;
             }
+            // authorization passed, continue to next middleware/route
+            next();
         }
         catch (error) {
             res.status(401).json({ message: "Invalid token" });
+            return;
         }
     };
 };

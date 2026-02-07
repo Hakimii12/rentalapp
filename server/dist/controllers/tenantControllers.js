@@ -22,9 +22,11 @@ const GetTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
         });
         if (tenant) {
+            console.log(tenant);
             res.json(tenant);
         }
         else {
+            console.log("tenant not found for cognitoId", cognitoId);
             res.status(404).json({ message: "Tenant not found" });
         }
     }
@@ -45,6 +47,7 @@ const CreateTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 phoneNumber
             }
         });
+        console.log("created tenant", tenant);
         if (tenant) {
             res.json(tenant);
         }

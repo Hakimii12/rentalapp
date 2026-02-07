@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
-
+import { createNewUserInDatabase } from "@/lib/utils";
+import { Manager, Tenant } from "@/types/prismaTypes";
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -23,12 +24,29 @@ export const api = createApi({
           const { idToken } = session.tokens ?? {};
           const user = await getCurrentUser();
           const userRole = idToken?.payload["custom:role"] as string;
-          const endpoint = userRole === "manager" ? `/manager/${user.userId}` : `/tenants/${user.userId}`;
-
+          const endpoint = userRole === "manager" ? `/manager/${user.userId}` : `/tenant/${user.userId}`;
+          console.log(endpoint)
           // delegate the actual fetch to RTK Query's baseQuery wrapper
           let userDetailsResponse = await fetchWithBQ(endpoint);
+ 
+          console.log("userDetailsResponse", userDetailsResponse)
+            // if user not found in our database, create new user
+            if (userDetailsResponse.error &&  userDetailsResponse.error.status === 404 ) {
+              userDetailsResponse = await createNewUserInDatabase(
+                user,
+                userRole, 
+                idToken,
+                fetchWithBQ
+              );
+            }
           //if user doesnt exist in our database, create new user
-          return userDetailsResponse;
+          return {
+            data:{
+              cognitoInfo:{...user},
+              userRole,
+              userInfo: userDetailsResponse.data as Tenant | Manager
+            }
+          }
         } catch (error) {
           console.error(error);
           return {
@@ -43,4 +61,4 @@ export const api = createApi({
   }),
 });
 
-export const {} = api;
+export const { useGetAuthUserQuery } = api;

@@ -11,8 +11,10 @@ export const GetTenant = async (req:Request<{ cognitoId: string }>,res:Response)
             }
         });
         if(tenant){
+            console.log(tenant)
             res.json(tenant)
         }else{
+            console.log("tenant not found for cognitoId", cognitoId)
             res.status(404).json({message:"Tenant not found"});
         }
     } catch (error:any) {
@@ -31,6 +33,7 @@ export const CreateTenant = async (req:Request,res:Response): Promise<void> => {
                 phoneNumber
             }
         });
+        console.log("created tenant", tenant)
         if(tenant){
           res.json(tenant);  
         }else{
