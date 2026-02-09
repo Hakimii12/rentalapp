@@ -6,4 +6,5 @@ const authMiddleware_1 = require("../middlewares/authMiddleware");
 const router = (0, express_1.Router)();
 router.get("/:cognitoId", (0, authMiddleware_1.authMiddleware)(["tenant"]), tenantControllers_1.GetTenant);
 router.post("/", (0, authMiddleware_1.authMiddleware)(["tenant"]), tenantControllers_1.CreateTenant);
+router.put("/:cognitoId", tenantControllers_1.updateTenant);
 exports.default = router;

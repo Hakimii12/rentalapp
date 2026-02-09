@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTenant = exports.GetTenant = void 0;
+exports.updateTenant = exports.CreateTenant = exports.GetTenant = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const GetTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,3 +59,23 @@ const CreateTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.CreateTenant = CreateTenant;
+const updateTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { cognitoId } = req.params;
+        const { name, email, phoneNumber } = req.body;
+        console.log(cognitoId, name, email, phoneNumber);
+        const updateTenant = yield prisma.tenant.update({
+            where: { cognitoId },
+            data: {
+                name,
+                email,
+                phoneNumber
+            },
+        });
+        res.json(updateTenant);
+    }
+    catch (error) {
+        res.status(500).json({ message: `Error updating tenant: ${error.message}` });
+    }
+});
+exports.updateTenant = updateTenant;
