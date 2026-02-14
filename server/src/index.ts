@@ -7,6 +7,9 @@ import helmet from "helmet";
 // ROUTE IMPORT 
 import TenantRoutes from "./routes/tenantRoutes";
 import ManagerRoutes from "./routes/managerRoutes";
+import applicationRoutes from "./routes/applicationRoutes";
+import propertyRoutes from "./routes/propertyRoutes"
+import leaseRoutes from "./routes/leaseRoutes"
 // CONFIGURATION
 dotenv.config();
 const app = express();
@@ -19,6 +22,9 @@ app.use(cors());
 // ROUTES  
 app.use("/tenant",TenantRoutes); 
 app.use("/manager",ManagerRoutes);
+app.use("/applications", applicationRoutes);
+app.use("/properties", propertyRoutes);
+app.use("/leases", leaseRoutes);
 app.get("/",(req,res)=>{
     res.send("this is home page")
 })
