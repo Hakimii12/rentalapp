@@ -101,19 +101,36 @@ export const api = createApi({
       ]:
       [{ type: "Properties", id: "LIST" }],
   }),
-    //   getProperty: build.query<Property, number>({
-    //   query: (id) => `properties/${id}`,
-    //   providesTags: (result, error, id) => [{ type: "PropertyDetails", id }],
-    //   async onQueryStarted(_, { queryFulfilled }) {
-    //     await withToast(queryFulfilled, {
-    //       error: "Failed to load property details.",
-    //     });
-    //   },
-    // }),
-
+    // tenant related 
+    addFavoriteProperty:build.mutation<Tenant,{ cognitoId: string; propertyId: number }>({
+      query:({cognitoId, propertyId })=>({
+        url: `tenants/${cognitoId}/favorites/${propertyId}`,
+        method: "POST",
+      }),
+      invalidatesTags: (result) => [
+        { type: "Tenants", id: result?.id },
+        { type: "Properties", id: "LIST" },
+      ],
+    }),
+    removeFavoriteProperty: build.mutation<
+      Tenant,
+      { cognitoId: string; propertyId: number }
+    >({
+      query: ({ cognitoId, propertyId }) => ({
+        url: `tenants/${cognitoId}/favorites/${propertyId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result) => [
+        { type: "Tenants", id: result?.id },
+        { type: "Properties", id: "LIST" },
+      ],
+    }),
+    
 })});
 
 export const { useGetAuthUserQuery,
    useUpdateTenantSettingsMutation,
    useUpdateManagerSettingsMutation,
-  useGetPropertiesQuery} = api;
+  useGetPropertiesQuery,
+  useAddFavoritePropertyMutation,
+   useRemoveFavoritePropertyMutation} = api;
