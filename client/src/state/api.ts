@@ -125,6 +125,10 @@ export const api = createApi({
         { type: "Properties", id: "LIST" },
       ],
     }),
+    getTenant:build.query<Tenant,string>({
+      query:(cognitoId)=>`tenants/${cognitoId}`,
+      providesTags:(result) => [{ type: "Tenants", id: result?.id }],
+    })
     
 })});
 
@@ -133,4 +137,5 @@ export const { useGetAuthUserQuery,
    useUpdateManagerSettingsMutation,
   useGetPropertiesQuery,
   useAddFavoritePropertyMutation,
-   useRemoveFavoritePropertyMutation} = api;
+   useRemoveFavoritePropertyMutation,
+  useGetTenantQuery} = api;
