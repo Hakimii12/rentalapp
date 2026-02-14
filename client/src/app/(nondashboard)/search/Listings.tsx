@@ -1,5 +1,3 @@
-import CardCompact from "@/components/CardCompact";
-import Card from "@/components/Card"
 import {
   useAddFavoritePropertyMutation,
   useGetAuthUserQuery,
@@ -9,8 +7,9 @@ import {
 } from "@/state/api";
 import { useAppSelector } from "@/state/redux";
 import { Property } from "@/types/prismaTypes";
-
+import Card from "@/components/Card";
 import React from "react";
+import CardCompact from "@/components/CardCompact";
 
 const Listings = () => {
   const { data: authUser } = useGetAuthUserQuery();

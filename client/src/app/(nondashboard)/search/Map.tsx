@@ -23,7 +23,7 @@ function Map() {
         container:mapContainerRef.current!,
         style:"mapbox://styles/hakimnew/cmlm0veso000i01sa9sv4doy1",
         center:filters.coordinates || [-74,5,40],
-        zoom:12
+        zoom:9
      })
       properties.forEach((property) => {
       const marker = createPropertyMarker(property, map);
@@ -31,10 +31,12 @@ function Map() {
       const path = markerElement.querySelector("path[fill='#3FB1CE']");
       if (path) path.setAttribute("fill", "#000000");
     });
-     const resizeMap=()=>setTimeout(()=>map.resize(),700)
-     resizeMap();
+      const resizeMap = () => {
+      if (map) setTimeout(() => map.resize(), 700);
+    };
+    resizeMap();
      return ()=>map.remove();
-    })
+    }, [isLoading, isError, properties, filters.coordinates])
      
   return (
     <div className='basis-5/12 grow relative rounded-xl' >
