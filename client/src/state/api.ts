@@ -1,7 +1,8 @@
+"use client"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
 import { cleanParams, createNewUserInDatabase } from "@/lib/utils";
-import { Manager, Property, Tenant } from "@/types/prismaTypes";
+import { Application, Manager, Property, Tenant } from "@/types/prismaTypes";
 import { FiltersState } from ".";
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -16,7 +17,7 @@ export const api = createApi({
     }
   }),
   reducerPath: "api",
-  tagTypes: ["Managers","Tenants","Properties",],
+  tagTypes: ["Managers","Tenants","Properties","PropertyDetails","Applications"],
   endpoints: (build) => ({
     getAuthUser: build.query<User, void>({
       queryFn: async (_arg, _queryApi, _extraoptions, fetchWithBQ) => {
@@ -26,7 +27,6 @@ export const api = createApi({
           const user = await getCurrentUser();
           const userRole = idToken?.payload["custom:role"] as string;
           const endpoint = userRole === "manager" ? `/manager/${user.userId}` : `/tenant/${user.userId}`;
-          console.log(endpoint)
           // delegate the actual fetch to RTK Query's baseQuery wrapper
           let userDetailsResponse = await fetchWithBQ(endpoint);
  
@@ -101,6 +101,17 @@ export const api = createApi({
       ]:
       [{ type: "Properties", id: "LIST" }],
   }),
+  createApplication: build.mutation<Application, Partial<Application>>({
+      query: (body) => ({
+        url: `applications`,
+        method: "POST",
+        body: body,
+      }),
+      invalidatesTags: ["Applications"],}),
+  GetProperty:build.query<Property,number>({
+       query: (id) => `properties/${id}`,
+       providesTags: (result, error, id) => [{ type: "PropertyDetails", id }],
+  }),
     // tenant related 
     addFavoriteProperty:build.mutation<Tenant,{ cognitoId: string; propertyId: number }>({
       query:({cognitoId, propertyId })=>({
@@ -128,7 +139,8 @@ export const api = createApi({
     getTenant:build.query<Tenant,string>({
       query:(cognitoId)=>`tenants/${cognitoId}`,
       providesTags:(result) => [{ type: "Tenants", id: result?.id }],
-    })
+    }),
+    
     
 })});
 
@@ -138,4 +150,6 @@ export const { useGetAuthUserQuery,
   useGetPropertiesQuery,
   useAddFavoritePropertyMutation,
    useRemoveFavoritePropertyMutation,
-  useGetTenantQuery} = api;
+  useGetTenantQuery,
+  useGetPropertyQuery,
+  useCreateApplicationMutation} = api;
