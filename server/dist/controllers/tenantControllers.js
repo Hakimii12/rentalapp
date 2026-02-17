@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addFavoriteProperty = exports.getCurrentResidences = exports.updateTenant = exports.CreateTenant = exports.GetTenant = void 0;
+exports.removeFavoriteProperty = exports.addFavoriteProperty = exports.getCurrentResidences = exports.updateTenant = exports.CreateTenant = exports.GetTenant = void 0;
 const client_1 = require("@prisma/client");
 const wkt_1 = require("@terraformer/wkt");
 const prisma = new client_1.PrismaClient();
@@ -146,3 +146,25 @@ const addFavoriteProperty = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.addFavoriteProperty = addFavoriteProperty;
+const removeFavoriteProperty = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { cognitoId, propertyId } = req.params;
+        const propertyIdNumber = Number(propertyId);
+        const updatedTenant = yield prisma.tenant.update({
+            where: { cognitoId },
+            data: {
+                favorites: {
+                    disconnect: { id: propertyIdNumber },
+                },
+            },
+            include: { favorites: true },
+        });
+        res.json(updatedTenant);
+    }
+    catch (err) {
+        res
+            .status(500)
+            .json({ message: `Error removing favorite property: ${err.message}` });
+    }
+});
+exports.removeFavoriteProperty = removeFavoriteProperty;

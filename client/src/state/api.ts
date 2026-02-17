@@ -2,7 +2,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
 import { cleanParams, createNewUserInDatabase } from "@/lib/utils";
-import { Application, Manager, Property, Tenant } from "@/types/prismaTypes";
+import { Application, Lease, Manager, Payment, Property, Tenant } from "@/types/prismaTypes";
 import { FiltersState } from ".";
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -17,7 +17,7 @@ export const api = createApi({
     }
   }),
   reducerPath: "api",
-  tagTypes: ["Managers","Tenants","Properties","PropertyDetails","Applications"],
+  tagTypes: ["Managers","Tenants","Properties","PropertyDetails","Applications","Payments","Leases"],
   endpoints: (build) => ({
     getAuthUser: build.query<User, void>({
       queryFn: async (_arg, _queryApi, _extraoptions, fetchWithBQ) => {
@@ -29,8 +29,7 @@ export const api = createApi({
           const endpoint = userRole === "manager" ? `/manager/${user.userId}` : `/tenant/${user.userId}`;
           // delegate the actual fetch to RTK Query's baseQuery wrapper
           let userDetailsResponse = await fetchWithBQ(endpoint);
- 
-          console.log("userDetailsResponse", userDetailsResponse)
+
             // if user not found in our database, create new user
             if (userDetailsResponse.error &&  userDetailsResponse.error.status === 404 ) {
               userDetailsResponse = await createNewUserInDatabase(
@@ -115,7 +114,7 @@ export const api = createApi({
     // tenant related 
     addFavoriteProperty:build.mutation<Tenant,{ cognitoId: string; propertyId: number }>({
       query:({cognitoId, propertyId })=>({
-        url: `tenants/${cognitoId}/favorites/${propertyId}`,
+        url: `tenant/${cognitoId}/favorites/${propertyId}`,
         method: "POST",
       }),
       invalidatesTags: (result) => [
@@ -128,7 +127,7 @@ export const api = createApi({
       { cognitoId: string; propertyId: number }
     >({
       query: ({ cognitoId, propertyId }) => ({
-        url: `tenants/${cognitoId}/favorites/${propertyId}`,
+        url: `tenant/${cognitoId}/favorites/${propertyId}`,
         method: "DELETE",
       }),
       invalidatesTags: (result) => [
@@ -137,10 +136,38 @@ export const api = createApi({
       ],
     }),
     getTenant:build.query<Tenant,string>({
-      query:(cognitoId)=>`tenants/${cognitoId}`,
+      query:(cognitoId)=>`tenant/${cognitoId}`,
       providesTags:(result) => [{ type: "Tenants", id: result?.id }],
     }),
-    
+    getCurrentResidences: build.query<Property[], string>({
+      query: (cognitoId) => `tenant/${cognitoId}/current-residences`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Properties" as const, id })),
+              { type: "Properties", id: "LIST" },
+            ]
+          : [{ type: "Properties", id: "LIST" }],
+          }), 
+              // lease related enpoints
+       getLeases: build.query<Lease[], number>({
+      query: () => "leases",
+      providesTags: ["Leases"],
+      async onQueryStarted(_, { queryFulfilled }) {
+      },
+    }),
+
+    getPropertyLeases: build.query<Lease[], number>({
+      query: (propertyId) => `properties/${propertyId}/leases`,
+      providesTags: ["Leases"],
+    }),
+
+    getPayments: build.query<Payment[], number>({
+      query: (leaseId) => `leases/${leaseId}/payments`,
+      providesTags: ["Payments"],
+      async onQueryStarted(_, { queryFulfilled }) {
+      },
+    }),
     
 })});
 
@@ -152,4 +179,8 @@ export const { useGetAuthUserQuery,
    useRemoveFavoritePropertyMutation,
   useGetTenantQuery,
   useGetPropertyQuery,
-  useCreateApplicationMutation} = api;
+  useCreateApplicationMutation,
+  useGetCurrentResidencesQuery,
+  useGetLeasesQuery,
+  useGetPaymentsQuery,
+  useGetPropertyLeasesQuery} = api;
