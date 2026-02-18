@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getManagerProperties = exports.CreateManager = exports.GetManager = void 0;
+exports.getManagerProperties = exports.updateManager = exports.createManager = exports.getManager = void 0;
 const client_1 = require("@prisma/client");
 const wkt_1 = require("@terraformer/wkt");
 const prisma = new client_1.PrismaClient();
-const GetManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { cognitoId } = req.params;
         const manager = yield prisma.manager.findUnique({
-            where: { cognitoId }
+            where: { cognitoId },
         });
         if (manager) {
             res.json(manager);
@@ -27,12 +27,13 @@ const GetManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        res.status(500)
-            .json({ message: "Error fetching manager", error });
+        res
+            .status(500)
+            .json({ message: `Error retrieving manager: ${error.message}` });
     }
 });
-exports.GetManager = GetManager;
-const CreateManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getManager = getManager;
+const createManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { cognitoId, name, email, phoneNumber } = req.body;
         const manager = yield prisma.manager.create({
@@ -40,40 +41,57 @@ const CreateManager = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 cognitoId,
                 name,
                 email,
-                phoneNumber
-            }
+                phoneNumber,
+            },
         });
-        if (manager) {
-            res.json(manager);
-        }
-        else {
-            res.status(400).json({ message: "Error creating manager" });
-        }
+        res.status(201).json(manager);
     }
     catch (error) {
-        res.status(500)
-            .json({ message: "Error creating manager", error });
+        res
+            .status(500)
+            .json({ message: `Error creating manager: ${error.message}` });
     }
 });
-exports.CreateManager = CreateManager;
+exports.createManager = createManager;
+const updateManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { cognitoId } = req.params;
+        const { name, email, phoneNumber } = req.body;
+        const updateManager = yield prisma.manager.update({
+            where: { cognitoId },
+            data: {
+                name,
+                email,
+                phoneNumber,
+            },
+        });
+        res.json(updateManager);
+    }
+    catch (error) {
+        res
+            .status(500)
+            .json({ message: `Error updating manager: ${error.message}` });
+    }
+});
+exports.updateManager = updateManager;
 const getManagerProperties = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { cognitoId } = req.params;
         const properties = yield prisma.property.findMany({
             where: { managerCognitoId: cognitoId },
             include: {
-                location: true
-            }
+                location: true,
+            },
         });
         const propertiesWithFormattedLocation = yield Promise.all(properties.map((property) => __awaiter(void 0, void 0, void 0, function* () {
             var _a;
-            const coordinates = yield prisma.$queryRaw `SELECT ST_asText(coordinates) as coordinates from "Location" where id=${property.location.id}`;
+            const coordinates = yield prisma.$queryRaw `SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
             const geoJSON = (0, wkt_1.wktToGeoJSON)(((_a = coordinates[0]) === null || _a === void 0 ? void 0 : _a.coordinates) || "");
             const longitude = geoJSON.coordinates[0];
             const latitude = geoJSON.coordinates[1];
             return Object.assign(Object.assign({}, property), { location: Object.assign(Object.assign({}, property.location), { coordinates: {
                         longitude,
-                        latitude
+                        latitude,
                     } }) });
         })));
         res.json(propertiesWithFormattedLocation);

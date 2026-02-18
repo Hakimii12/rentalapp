@@ -168,10 +168,34 @@ export const api = createApi({
       async onQueryStarted(_, { queryFulfilled }) {
       },
     }),
+    // manager related endpoints
+    getManagerProperties: build.query<Property[], string>({
+      query: (cognitoId) => `manager/${cognitoId}/properties`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Properties" as const, id })),
+              { type: "Properties", id: "LIST" },
+            ]
+          : [{ type: "Properties", id: "LIST" }],
+    }),
+      createProperty: build.mutation<Property, FormData>({
+      query: (newProperty) => ({
+        url: `properties`,
+        method: "POST",
+        body: newProperty,
+      }),
+      invalidatesTags: (result) => [
+        { type: "Properties", id: "LIST" },
+        { type: "Managers", id: result?.manager?.id },
+      ],}),
     
 })});
 
-export const { useGetAuthUserQuery,
+export const {
+  useCreatePropertyMutation, 
+  useGetManagerPropertiesQuery,
+  useGetAuthUserQuery,
    useUpdateTenantSettingsMutation,
    useUpdateManagerSettingsMutation,
   useGetPropertiesQuery,
@@ -183,4 +207,5 @@ export const { useGetAuthUserQuery,
   useGetCurrentResidencesQuery,
   useGetLeasesQuery,
   useGetPaymentsQuery,
-  useGetPropertyLeasesQuery} = api;
+  useGetPropertyLeasesQuery,
+  } = api;
