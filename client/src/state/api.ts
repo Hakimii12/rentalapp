@@ -189,10 +189,38 @@ export const api = createApi({
         { type: "Properties", id: "LIST" },
         { type: "Managers", id: result?.manager?.id },
       ],}),
+     // application related endpoints
+     getApplications: build.query<
+      Application[],
+      { userId?: string; userType?: string }
+    >({
+      query: (params) => {
+        const queryParams = new URLSearchParams();
+        if (params.userId) {
+          queryParams.append("userId", params.userId.toString());
+        }
+        if (params.userType) {
+          queryParams.append("userType", params.userType);
+        }
+
+        return `applications?${queryParams.toString()}`;
+      },}),
+      updateApplicationStatus: build.mutation<
+      Application & { lease?: Lease },
+      { id: number; status: string }
+    >({
+      query: ({ id, status }) => ({
+        url: `applications/${id}/status`,
+        method: "PUT",
+        body: { status },
+      }),
+      invalidatesTags: ["Applications", "Leases"],}),
     
 })});
 
 export const {
+  useUpdateApplicationStatusMutation,
+  useGetApplicationsQuery,
   useCreatePropertyMutation, 
   useGetManagerPropertiesQuery,
   useGetAuthUserQuery,
