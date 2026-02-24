@@ -197,6 +197,11 @@ export const createProperty = async( req: Request,res: Response):Promise<void>=>
       managerCognitoId,
       ...propertyData
     }=req.body;
+    console.log(address,
+      city,
+      state,
+      country,
+      postalCode)
     const photoUrls = await Promise.all(
       files.map(async(file)=>{
         const uploadParams={
@@ -268,5 +273,6 @@ export const createProperty = async( req: Request,res: Response):Promise<void>=>
     res
       .status(500)
       .json({ message: `Error creating property: ${err.message}` });
+      console.log(err)
   }
 }

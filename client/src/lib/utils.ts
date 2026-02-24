@@ -1,12 +1,28 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-
+import {toast} from "sonner"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 export function formatEnumString(str: string) {
   return str.replace(/([A-Z])/g, " $1").trim();
 }
+export const withToast = async <T>(
+  mutationFn: Promise<T>,
+  messages: Partial<MutationMessages>
+) => {
+  const { success, error } = messages;
+
+  try {
+    const result = await mutationFn;
+    if (success) toast.success(success);
+    return result;
+  } catch (err) {
+    if (error) toast.error(error);
+    throw err;
+  }
+};
+
 export const createNewUserInDatabase = async (user: any,userRole:string,idToken:any,fetchWithBQ: any) => {
   const createEndpoint =userRole?.toLowerCase()==="manager" ? "/manager" : "/tenant";
   console.log("userRole",userRole)

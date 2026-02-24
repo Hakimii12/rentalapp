@@ -155,6 +155,7 @@ const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const files = req.files;
         const _e = req.body, { address, city, state, country, postalCode, managerCognitoId } = _e, propertyData = __rest(_e, ["address", "city", "state", "country", "postalCode", "managerCognitoId"]);
+        console.log(address, city, state, country, postalCode);
         const photoUrls = yield Promise.all(files.map((file) => __awaiter(void 0, void 0, void 0, function* () {
             const uploadParams = {
                 Bucket: process.env.S3_BUCKET_NAME,
@@ -203,6 +204,7 @@ const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res
             .status(500)
             .json({ message: `Error creating property: ${err.message}` });
+        console.log(err);
     }
 });
 exports.createProperty = createProperty;

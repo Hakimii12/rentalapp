@@ -65,6 +65,12 @@ export const api = createApi({
         body: updatedTenant,
       }),
       invalidatesTags:(result)=>[{type:"Tenants",id:result?.id}],
+       async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Settings updated successfully!",
+          error: "Failed to update settings.",
+        });
+      },
     }),
     updateManagerSettings: build.mutation<Manager,{ cognitoId: string } & Partial<Manager>>({
       query: ({ cognitoId, ...updatedManager }) => ({
@@ -73,6 +79,12 @@ export const api = createApi({
         body: updatedManager,
       }),
       invalidatesTags: (result) => [{ type: "Managers", id: result?.id }],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Settings updated successfully!",
+          error: "Failed to update settings.",
+        });
+      },
   }),
   // property related endpoint
   getProperties:build.query<Property[],Partial<FiltersState> & {favoriteIds?:number[]}>({
@@ -106,7 +118,15 @@ export const api = createApi({
         method: "POST",
         body: body,
       }),
-      invalidatesTags: ["Applications"],}),
+      invalidatesTags: ["Applications"],
+    async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Application created successfully!",
+          error: "Failed to create applications.",
+        });
+      },
+    
+    }),
   GetProperty:build.query<Property,number>({
        query: (id) => `properties/${id}`,
        providesTags: (result, error, id) => [{ type: "PropertyDetails", id }],
@@ -121,6 +141,12 @@ export const api = createApi({
         { type: "Tenants", id: result?.id },
         { type: "Properties", id: "LIST" },
       ],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Added to favorites!!",
+          error: "Failed to add to favorites",
+        });
+      },
     }),
     removeFavoriteProperty: build.mutation<
       Tenant,
@@ -134,6 +160,12 @@ export const api = createApi({
         { type: "Tenants", id: result?.id },
         { type: "Properties", id: "LIST" },
       ],
+       async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Removed from favorites!",
+          error: "Failed to remove from favorites.",
+        });
+      },
     }),
     getTenant:build.query<Tenant,string>({
       query:(cognitoId)=>`tenant/${cognitoId}`,
@@ -188,7 +220,14 @@ export const api = createApi({
       invalidatesTags: (result) => [
         { type: "Properties", id: "LIST" },
         { type: "Managers", id: result?.manager?.id },
-      ],}),
+      ],
+       async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Property created successfully!",
+          error: "Failed to create property.",
+        });
+      },
+    }),
      // application related endpoints
      getApplications: build.query<
       Application[],
@@ -214,7 +253,13 @@ export const api = createApi({
         method: "PUT",
         body: { status },
       }),
-      invalidatesTags: ["Applications", "Leases"],}),
+      invalidatesTags: ["Applications", "Leases"],
+     async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Application status updated successfully!",
+          error: "Failed to update application settings.",
+        });
+      }}),
     
 })});
 
