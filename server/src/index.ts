@@ -29,8 +29,8 @@ app.get("/",(req,res)=>{
     res.send("this is home page")
 })
 // SERVER
-const port = process.env.PORT || 3002;
+const port = Number(process.env.PORT) || 3002;
 console.log(port)
-app.listen(port,()=>{
+app.listen(port,"0.0.0.0",()=>{
    console.log(`Server is running on port http://localhost:${port}/`)
 })
