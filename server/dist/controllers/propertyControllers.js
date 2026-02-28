@@ -27,7 +27,6 @@ exports.createProperty = exports.getProperty = exports.getProperties = void 0;
 const client_1 = require("@prisma/client");
 const wkt_1 = require("@terraformer/wkt");
 const client_s3_1 = require("@aws-sdk/client-s3");
-const lib_storage_1 = require("@aws-sdk/lib-storage");
 const axios_1 = __importDefault(require("axios"));
 const prisma = new client_1.PrismaClient();
 const s3Client = new client_s3_1.S3Client({
@@ -151,46 +150,67 @@ const getProperty = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getProperty = getProperty;
 const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b;
     try {
-        const files = req.files;
-        const _e = req.body, { address, city, state, country, postalCode, managerCognitoId } = _e, propertyData = __rest(_e, ["address", "city", "state", "country", "postalCode", "managerCognitoId"]);
-        console.log(address, city, state, country, postalCode);
+        const files = req.files || [];
+        const _c = req.body, { address, city, state, country, postalCode, managerCognitoId } = _c, propertyData = __rest(_c, ["address", "city", "state", "country", "postalCode", "managerCognitoId"]);
+        /* =======================
+           1️⃣ Upload Images to S3
+        ======================== */
         const photoUrls = yield Promise.all(files.map((file) => __awaiter(void 0, void 0, void 0, function* () {
-            const uploadParams = {
+            const key = `properties/${Date.now()}-${file.originalname}`;
+            yield s3Client.send(new client_s3_1.PutObjectCommand({
                 Bucket: process.env.S3_BUCKET_NAME,
-                Key: `properties/${Date.now()}-${file.originalname}`,
+                Key: key,
                 Body: file.buffer,
-                ContentType: file.mimetype
-            };
-            const UploadResult = yield new lib_storage_1.Upload({
-                client: s3Client,
-                params: uploadParams
-            }).done();
-            return UploadResult.Location;
+                ContentType: file.mimetype,
+            }));
+            return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
         })));
+        /* =======================
+           2️⃣ Geocoding
+        ======================== */
         const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams({
             street: address,
             city,
             country,
-            portalcode: postalCode,
+            postalcode: postalCode,
             format: "json",
-            limit: "1"
+            limit: "1",
         }).toString()}`;
         const geocodingResponse = yield axios_1.default.get(geocodingUrl, {
             headers: {
-                "User-Agent": "RealEstateApp (justsomedummyemail@gmail.com",
+                "User-Agent": "RealEstateApp (example@email.com)",
             },
         });
-        const [longitude, latitude] = ((_a = geocodingResponse.data[0]) === null || _a === void 0 ? void 0 : _a.lon) && ((_b = geocodingResponse.data[0]) === null || _b === void 0 ? void 0 : _b.lat) ? [parseFloat((_c = geocodingResponse.data[0]) === null || _c === void 0 ? void 0 : _c.lon), parseFloat((_d = geocodingResponse.data[0]) === null || _d === void 0 ? void 0 : _d.lan),] : [0, 0];
-        //create location
+        const lon = (_a = geocodingResponse.data[0]) === null || _a === void 0 ? void 0 : _a.lon;
+        const lat = (_b = geocodingResponse.data[0]) === null || _b === void 0 ? void 0 : _b.lat;
+        const longitude = lon ? parseFloat(lon) : 0;
+        const latitude = lat ? parseFloat(lat) : 0;
+        /* =======================
+           3️⃣ Create Location (FIXED SQL)
+        ======================== */
         const [location] = yield prisma.$queryRaw `
-    INERT INTO "Location" (address,ctiy, state,country,"postalCode",coordinates)
-    VALUE (${address},${city},${state},${country},${postalCode},ST_SetSRID(ST_MakePoint(${longitude},${latitude}),4326))
-    RETURNING id,address,city,state, country,"postalCode",ST_asText(coordinates) as coordinates;`;
+      INSERT INTO "Location" 
+      (address, city, state, country, "postalCode", coordinates)
+      VALUES (
+        ${address},
+        ${city},
+        ${state},
+        ${country},
+        ${postalCode},
+        ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)
+      )
+      RETURNING id, address, city, state, country, "postalCode",
+      ST_AsText(coordinates) as coordinates;
+    `;
+        /* =======================
+           4️⃣ Create Property
+        ======================== */
         const newProperty = yield prisma.property.create({
             data: Object.assign(Object.assign({}, propertyData), { photoUrls, locationId: location.id, managerCognitoId, amenities: typeof propertyData.amenities === "string"
-                    ? propertyData.amenities.split(",") : [], highlights: typeof propertyData.highlights === "string"
+                    ? propertyData.amenities.split(",")
+                    : [], highlights: typeof propertyData.highlights === "string"
                     ? propertyData.highlights.split(",")
                     : [], isPetsAllowed: propertyData.isPetsAllowed === "true", isParkingIncluded: propertyData.isParkingIncluded === "true", pricePerMonth: parseFloat(propertyData.pricePerMonth), securityDeposit: parseFloat(propertyData.securityDeposit), applicationFee: parseFloat(propertyData.applicationFee), beds: parseInt(propertyData.beds), baths: parseFloat(propertyData.baths), squareFeet: parseInt(propertyData.squareFeet) }),
             include: {
@@ -201,10 +221,10 @@ const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(201).json(newProperty);
     }
     catch (err) {
-        res
-            .status(500)
-            .json({ message: `Error creating property: ${err.message}` });
-        console.log(err);
+        console.error(err);
+        res.status(500).json({
+            message: `Error creating property: ${err.message}`,
+        });
     }
 });
 exports.createProperty = createProperty;
