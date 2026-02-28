@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 export function formatEnumString(str: string) {
   return str.replace(/([A-Z])/g, " $1").trim();
 }
+type MutationMessages = {
+  success?: string;
+  error: string;
+};
 export const withToast = async <T>(
   mutationFn: Promise<T>,
   messages: Partial<MutationMessages>

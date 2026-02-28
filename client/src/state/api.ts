@@ -1,7 +1,7 @@
 "use client"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
-import { cleanParams, createNewUserInDatabase } from "@/lib/utils";
+import { cleanParams, createNewUserInDatabase, withToast } from "@/lib/utils";
 import { Application, Lease, Manager, Payment, Property, Tenant } from "@/types/prismaTypes";
 import { FiltersState } from ".";
 export const api = createApi({
