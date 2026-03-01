@@ -16,27 +16,28 @@ const NewProperty = () => {
   const { data: authUser } = useGetAuthUserQuery();
 
   const form = useForm<PropertyFormData>({
-    resolver: zodResolver(propertySchema),
+    resolver: zodResolver(propertySchema) as any,
     defaultValues: {
-      name: "",
-      description: "",
-      pricePerMonth: 1000,
-      securityDeposit: 500,
-      applicationFee: 100,
-      isPetsAllowed: true,
-      isParkingIncluded: true,
-      photoUrls: [],
-      amenities: "",
-      highlights: "",
-      beds: 1,
-      baths: 1,
-      squareFeet: 1000,
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      postalCode: "",
-    },
+    name: "",
+    description: "",
+    pricePerMonth: 1000,
+    securityDeposit: 500,
+    applicationFee: 100,
+    isPetsAllowed: true,
+    isParkingIncluded: true,
+    photoUrls: [],
+    amenities: "",
+    highlights: "",
+    beds: 1,
+    baths: 1,
+    squareFeet: 1000,
+    propertyType: PropertyTypeEnum.Apartment, // ✅ ADD THIS
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    postalCode: "",
+},
   });
 
   const onSubmit = async (data: PropertyFormData) => {
