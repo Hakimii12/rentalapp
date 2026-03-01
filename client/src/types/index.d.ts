@@ -71,6 +71,8 @@ declare global {
 
   interface ContactWidgetProps {
     onOpenModal: () => void;
+    /** manager phone number fetched from backend */
+    phoneNumber: string;
   }
 
   interface ImagePreviewsProps {
