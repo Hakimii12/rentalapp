@@ -248,5 +248,77 @@
     "numberOfReviews": 8,
     "locationId": 10,
     "managerCognitoId": "us-east-2:01234567-90ab-cdef-1234-567890abcdef"
+  },
+  {
+    "id": 11,
+    "name": "Bole Luxury Condo",
+    "description": "Premium modern apartment with beautiful city views, situated in the premium Bole district.",
+    "pricePerMonth": 1800.0,
+    "securityDeposit": 1800.0,
+    "applicationFee": 50.0,
+    "photoUrls": [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80"
+    ],
+    "amenities": ["AirConditioning", "WasherDryer", "Gym", "WiFi"],
+    "highlights": ["GreatView", "RecentlyRenovated", "CloseToTransit"],
+    "isPetsAllowed": false,
+    "isParkingIncluded": true,
+    "beds": 2,
+    "baths": 2,
+    "squareFeet": 1100,
+    "propertyType": "Apartment",
+    "postedDate": "2024-01-10T00:00:00Z",
+    "averageRating": 4.9,
+    "numberOfReviews": 15,
+    "locationId": 11,
+    "managerCognitoId": "010be580-60a1-70ae-780e-18a6fd94ad32"
+  },
+  {
+    "id": 12,
+    "name": "Kazanchis Cozy Studio",
+    "description": "Warm, sunny studio apartment close to the diplomatic area in Kazanchis.",
+    "pricePerMonth": 950.0,
+    "securityDeposit": 950.0,
+    "applicationFee": 30.0,
+    "photoUrls": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"
+    ],
+    "amenities": ["WasherDryer", "WiFi", "Refrigerator"],
+    "highlights": ["HighSpeedInternetAccess", "CloseToTransit"],
+    "isPetsAllowed": true,
+    "isParkingIncluded": false,
+    "beds": 1,
+    "baths": 1,
+    "squareFeet": 500,
+    "propertyType": "Rooms",
+    "postedDate": "2024-02-15T00:00:00Z",
+    "averageRating": 4.6,
+    "numberOfReviews": 7,
+    "locationId": 12,
+    "managerCognitoId": "010be580-60a1-70ae-780e-18a6fd94ad32"
+  },
+  {
+    "id": 13,
+    "name": "Sarbet Spacious Villa",
+    "description": "Stunning luxury family villa with a gorgeous green garden, in a quiet neighborhood.",
+    "pricePerMonth": 3500.0,
+    "securityDeposit": 3500.0,
+    "applicationFee": 100.0,
+    "photoUrls": [
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80"
+    ],
+    "amenities": ["AirConditioning", "WasherDryer", "Parking", "PetsAllowed", "WiFi"],
+    "highlights": ["QuietNeighborhood", "GreatView"],
+    "isPetsAllowed": true,
+    "isParkingIncluded": true,
+    "beds": 4,
+    "baths": 3.5,
+    "squareFeet": 2800,
+    "propertyType": "Villa",
+    "postedDate": "2024-03-01T00:00:00Z",
+    "averageRating": 4.8,
+    "numberOfReviews": 4,
+    "locationId": 13,
+    "managerCognitoId": "us-east-2:23456789-90ab-cdef-1234-567890abcdef"
   }
 ]

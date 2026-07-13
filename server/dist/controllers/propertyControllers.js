@@ -128,6 +128,9 @@ const getProperty = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             where: { id: Number(id) },
             include: {
                 location: true,
+                manager: {
+                    select: { phoneNumber: true },
+                },
             },
         });
         if (property) {

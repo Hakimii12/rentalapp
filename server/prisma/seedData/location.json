@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "country": "United States",
-    "city": "Pasadena",
-    "state": "CA",
-    "address": "123 Colorado Blvd",
-    "postalCode": "91105",
-    "coordinates": "POINT(-118.144516 34.147785)"
+    "country": "Ethiopia",
+    "city": "Addis Ababa",
+    "state": "Addis Ababa",
+    "address": "123 Bole Road",
+    "postalCode": "1000",
+    "coordinates": "POINT(38.7469 9.03)"
   },
   {
     "id": 2,
@@ -88,5 +88,32 @@
     "address": "789 Rodeo Dr",
     "postalCode": "90210",
     "coordinates": "POINT(-118.400356 34.073620)"
+  },
+  {
+    "id": 11,
+    "country": "Ethiopia",
+    "city": "Addis Ababa",
+    "state": "Addis Ababa",
+    "address": "Bole High Street",
+    "postalCode": "1000",
+    "coordinates": "POINT(38.7881 9.0012)"
+  },
+  {
+    "id": 12,
+    "country": "Ethiopia",
+    "city": "Addis Ababa",
+    "state": "Addis Ababa",
+    "address": "Kazanchis Square",
+    "postalCode": "1000",
+    "coordinates": "POINT(38.7675 9.0223)"
+  },
+  {
+    "id": 13,
+    "country": "Ethiopia",
+    "city": "Addis Ababa",
+    "state": "Addis Ababa",
+    "address": "Sarbet Avenue",
+    "postalCode": "1000",
+    "coordinates": "POINT(38.7352 8.9954)"
   }
 ]

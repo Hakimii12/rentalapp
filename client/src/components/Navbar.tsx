@@ -27,6 +27,10 @@ const Navbar = () => {
   const isDashboardPage =
     pathname.includes("/managers") || pathname.includes("/tenants");
 
+  const showSearchOrAddButton =
+    Boolean(authUser) &&
+    (isDashboardPage || pathname === "/" || pathname === "/landing");
+
   const handleSignOut = async () => {
     await signOut();
     window.location.href = "/";
@@ -65,7 +69,7 @@ const Navbar = () => {
               </div>
             </div>
           </Link>
-          {isDashboardPage && authUser && (
+          {showSearchOrAddButton && (
             <Button
               variant="secondary"
               className="md:ml-4 bg-primary-50 text-primary-700 hover:bg-secondary-500 hover:text-primary-50"
