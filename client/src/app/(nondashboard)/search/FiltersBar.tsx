@@ -124,6 +124,7 @@ const FiltersBar = () => {
           />
           <Button
             onClick={handleLocationSearch}
+            aria-label="Search location"
             className={`rounded-r-xl rounded-l-none border-l-none border-primary-400 shadow-none 
               border hover:bg-primary-700 hover:text-primary-50`}
           >
@@ -243,6 +244,7 @@ const FiltersBar = () => {
         <div className="flex border rounded-xl">
           <Button
             variant="ghost"
+            aria-label="List view"
             className={cn(
               "px-3 py-1 rounded-none rounded-l-xl hover:bg-primary-600 hover:text-primary-50",
               viewMode === "list" ? "bg-primary-700 text-primary-50" : ""
@@ -253,6 +255,7 @@ const FiltersBar = () => {
           </Button>
           <Button
             variant="ghost"
+            aria-label="Grid view"
             className={cn(
               "px-3 py-1 rounded-none rounded-r-xl hover:bg-primary-600 hover:text-primary-50",
               viewMode === "grid" ? "bg-primary-700 text-primary-50" : ""
